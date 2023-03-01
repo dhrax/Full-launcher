@@ -13,5 +13,5 @@ TODO
     - [ ] Multiple pages
       - [ ] Public pages
       - [ ] Private pages
-    - Long press options
-    - Add icons to the main pages (launcher)
+    - [ ] Long press options
+    - [ ] Add icons to the main pages (launcher)
