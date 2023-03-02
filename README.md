@@ -1,11 +1,11 @@
 TODO
 
 - [ ] General
-  - [ ] Remove action bar
+  - [x] Remove action bar
   - [ ] Gesture support
   - [ ] Folder support
 - [ ] Wallpaper
-    - [ ] Transparent wallpaper
+    - [x] Transparent wallpaper
     - [ ] Change wallpaper
 - [ ] App drawer
     - [ ] Modify layout to add icons in the bottom side of the screen

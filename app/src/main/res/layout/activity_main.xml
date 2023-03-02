@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:id="@+id/mainLinear"
@@ -26,13 +27,29 @@
         style="@style/Widget.Design.BottomSheet.Modal"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         >
-        <GridView
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/drawerGrid"
-            android:numColumns="4"
-            android:stretchMode="columnWidth"
-            android:layout_gravity="center" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/editTextTextPersonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:hint="Search for apps"/>
+
+            <GridView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/drawerGrid"
+                android:numColumns="4"
+                android:stretchMode="columnWidth"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+
+
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

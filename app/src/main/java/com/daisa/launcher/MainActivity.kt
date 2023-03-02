@@ -1,15 +1,20 @@
 package com.daisa.launcher
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import com.daisa.launcher.databinding.ActivityMainBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
+
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
+    lateinit var bottomSheetBehavior : BottomSheetBehavior<FrameLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +53,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialize() {
 
-        val bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet).apply {
-            isHideable = false
-            peekHeight = 300
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet).apply {
+            isHideable = true
+            isDraggable = true
+            peekHeight  = 0
+
+            @SuppressLint("InternalInsetResource")
+            val statusBarHeightId = resources.getIdentifier("status_bar_height", "dimen", "android")
+            val statusBarHeight = resources.getDimensionPixelSize(statusBarHeightId)
+            maxHeight = ScreenMetricsCompat.getScreenSize(this@MainActivity).height - statusBarHeight
         }
 
         getAllApps(packageManager)
@@ -60,10 +71,11 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                val stateHiddenOrDragging =
-                    newState == BottomSheetBehavior.STATE_HIDDEN || newState == BottomSheetBehavior.STATE_DRAGGING
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    Log.d(TAG_DEBUG, "Estado cambiado: a hidden")
 
-                if (stateHiddenOrDragging && binding.drawerGrid.getChildAt(0).y.toInt() != 0)
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }else if (newState == BottomSheetBehavior.STATE_DRAGGING && binding.drawerGrid.getChildAt(0)?.y?.toInt() != 0)
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
 
