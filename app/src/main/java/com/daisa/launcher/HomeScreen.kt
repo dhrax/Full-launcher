@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import com.daisa.launcher.databinding.FragmentHomeScreenBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -15,14 +12,15 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class HomeScreen(
     private val appsOnScreen: MutableList<AppInfo>
-) : Fragment(), View.OnTouchListener
-{
+) : Fragment(), View.OnTouchListener, View.OnDragListener {
 
     private lateinit var binding: FragmentHomeScreenBinding
 
     private var lastPosPressedY = 0f
     private var lastTouchPosY = 0f
-    private lateinit var mainActivity : MainActivity
+    private lateinit var mainActivity: MainActivity
+
+    private lateinit var adapter: AppDrawerAdapter
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -33,10 +31,12 @@ class HomeScreen(
 
         mainActivity = activity as MainActivity
 
-
         binding.root.setOnTouchListener(this)
+        binding.root.setOnDragListener(this)
 
-        binding.homeScreenGrid.adapter = AppDrawerAdapter(this.requireContext(), appsOnScreen)
+        adapter = AppDrawerAdapter(this.requireContext(), appsOnScreen)
+
+        binding.homeScreenGrid.adapter = adapter
 
         return binding.root
     }
@@ -55,7 +55,7 @@ class HomeScreen(
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(view: View?, event: MotionEvent): Boolean {
 
-        when(event.action){
+        when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 lastPosPressedY = event.rawY
                 return true
@@ -79,15 +79,44 @@ class HomeScreen(
         val dy = lastTouchPosY - lastPosPressedY
 
         val isBigEnough = dy > 500 || dy < -500 //export limit
-        if(isBigEnough){
-            if(dy < 0){
+        if (isBigEnough) {
+            if (dy < 0) {
                 Log.d(TAG_DEBUG, "abrir appdrawer")
 
                 mainActivity.bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-            }else{
+            } else {
                 Log.d(TAG_DEBUG, "hacia abajo")
             }
         }
     }
+
+    override fun onDrag(view: View, dragEvent: DragEvent): Boolean {
+
+        when (dragEvent.action) {
+            DragEvent.ACTION_DRAG_STARTED -> {
+                mainActivity.bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                view.animate().start()
+
+            }
+            DragEvent.ACTION_DRAG_ENDED, DragEvent.ACTION_DRAG_EXITED -> {
+                view.animate().cancel()
+            }
+            DragEvent.ACTION_DROP -> {
+                val app = findAppByPackageName(dragEvent.clipData.getItemAt(0).text as String)
+
+                if (app != null) {
+                    appsOnScreen.add(app)
+                    adapter.updateAdapter(appsOnScreen)
+                } else {
+                    Log.e(
+                        TAG_DEBUG,
+                        "No se ha podido añadir la app seleccionada a la pantalla de inicio"
+                    )
+                }
+            }
+        }
+        return true
+    }
+
 }

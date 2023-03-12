@@ -71,3 +71,8 @@ object ScreenMetricsCompat {
         }
     }
 }
+
+
+fun findAppByPackageName(packageName: String): AppInfo? {
+    return appsList.firstOrNull { app -> app.packageName.equals(packageName) }
+}
